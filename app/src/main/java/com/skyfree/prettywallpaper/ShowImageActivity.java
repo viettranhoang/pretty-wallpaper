@@ -1,6 +1,11 @@
 package com.skyfree.prettywallpaper;
 
 import android.app.WallpaperManager;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.provider.ContactsContract;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +22,7 @@ import android.widget.Toast;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.skyfree.prettywallpaper.adapter.ViewPagerAdapter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +83,7 @@ public class ShowImageActivity extends AppCompatActivity {
     @OnClick(R.id.image_wallpaper)
     void onClickSetWallpaper(View view) {
 
-        int imageResource = getMipmapResIdByName("img_" + mPager.getCurrentItem() + 1);
+        int imageResource = getMipmapResIdByName("img_" + (mPager.getCurrentItem() + 1));
         WallpaperManager myWallpaperManager
                 = WallpaperManager.getInstance(getApplicationContext());
         try {
@@ -91,6 +97,35 @@ public class ShowImageActivity extends AppCompatActivity {
 
     @OnClick(R.id.image_contact)
     void onClickSetContact(View view) {
+        int imageResource = getMipmapResIdByName("nen_img_" + (mPager.getCurrentItem() + 1));
+        setPhotoContact(imageResource);
 
+    }
+
+
+    private void setPhotoContact(int imageResource) { // add , update contact using intent
+        byte[] byteArrayImage = convertImageToByte(imageResource);
+
+        ArrayList<ContentValues> data = new ArrayList<>();
+
+        ContentValues row = new ContentValues();
+        row.put(ContactsContract.Contacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
+        row.put(ContactsContract.CommonDataKinds.Photo.PHOTO, byteArrayImage);
+        data.add(row);
+
+        Intent intent = new Intent(Intent.ACTION_INSERT_OR_EDIT, ContactsContract.Contacts.CONTENT_URI);
+        intent.setType(ContactsContract.Contacts.CONTENT_ITEM_TYPE);
+        intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, data);
+        startActivity(intent);
+    }
+
+    private byte[] convertImageToByte(int imageResource) {
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), imageResource); // your image
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+
+        return byteArray;
     }
 }

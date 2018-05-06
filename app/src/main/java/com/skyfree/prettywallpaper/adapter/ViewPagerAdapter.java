@@ -43,7 +43,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
         PhotoView photoView = itemView.findViewById(R.id.image_photo_view);
         int imageId = this.getMipmapResIdByName(mListData.get(position));
-        Picasso.get().load(imageId).into(photoView);
+        Picasso.get().load(imageId).fit().centerCrop().into(photoView);
 
         container.addView(itemView);
         return itemView;

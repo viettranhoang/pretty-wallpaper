@@ -59,8 +59,7 @@ public class GridAdapter extends BaseAdapter{
 
         String img = this.listData.get(position);
         int imageId = this.getMipmapResIdByName(img);
-        Picasso.get().load(imageId).into(holder.img);
-//        holder.img.setImageResource(imageId);
+        Picasso.get().load(imageId).fit().centerCrop().into(holder.img);
 
         return convertView;
     }
